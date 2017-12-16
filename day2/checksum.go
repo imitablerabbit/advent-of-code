@@ -11,6 +11,13 @@ import (
 
 var (
 	spreadsheetFlag = flag.String("spreadsheet", "", "`file` of spreadsheet data to compute checksum for")
+	typeFlag        = flag.Int("type", 1, "type of checksum to calculate, 1 is lowest and highest diff, 2 is even division")
+)
+
+// type constants
+const (
+	DIFF = 1 + iota
+	EVENDIVISION
 )
 
 func init() {
@@ -31,10 +38,32 @@ func computeRowDiff(row []int) int {
 	return highest - lowest
 }
 
-func computeChecksum(spreadsheet [][]int) (checksum int) {
+func computeEvenDivision(row []int) int {
+	for aIndex, a := range row {
+		for bIndex, b := range row {
+			if aIndex == bIndex {
+				continue
+			}
+			if a%b == 0 {
+				return a / b
+			}
+		}
+	}
+	return 0 // Should not get here
+}
+
+func computeDiffChecksum(spreadsheet [][]int) (checksum int) {
 	for _, row := range spreadsheet {
 		diff := computeRowDiff(row)
 		checksum = checksum + diff
+	}
+	return
+}
+
+func computeEvenDivisionChecksum(spreadsheet [][]int) (checksum int) {
+	for _, row := range spreadsheet {
+		division := computeEvenDivision(row)
+		checksum = checksum + division
 	}
 	return
 }
@@ -73,6 +102,14 @@ func main() {
 		fmt.Printf("Error: could not parse spreadsheet data: %v\n%v", err, string(spreadsheetBytes))
 		return
 	}
-	checksum := computeChecksum(spreadsheetData)
+	var checksum int
+	switch *typeFlag {
+	case DIFF:
+		checksum = computeDiffChecksum(spreadsheetData)
+		break
+	case EVENDIVISION:
+		checksum = computeEvenDivisionChecksum(spreadsheetData)
+		break
+	}
 	fmt.Printf("Spreadsheet = %v\nChecksum = %d\n", spreadsheetData, checksum)
 }
