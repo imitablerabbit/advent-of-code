@@ -36,8 +36,7 @@ func splitString(data string) (digits []int, err error) {
 
 // Loop through digits and sum them if they are matching next to each other
 // Make sure to get the last digit summed with the first.
-func sumNext(digits []int) int {
-	total := 0
+func sumNext(digits []int) (total int) {
 	lastIndex := len(digits) - 1
 	for index, a := range digits[:lastIndex] {
 		b := digits[index+1]
@@ -50,13 +49,12 @@ func sumNext(digits []int) int {
 	if first == last {
 		total = total + last
 	}
-	return total
+	return
 }
 
 // Loop through digits and sum them if they are matching next to each other
 // Make sure to get the last digit summed with the first.
-func sumHalfway(digits []int) int {
-	total := 0
+func sumHalfway(digits []int) (total int) {
 	offset := len(digits) / 2
 	for index, a := range digits {
 		var halfwayIndex int
@@ -70,7 +68,7 @@ func sumHalfway(digits []int) int {
 			total = total + a
 		}
 	}
-	return total
+	return
 }
 
 func main() {
