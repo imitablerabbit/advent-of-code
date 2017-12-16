@@ -8,6 +8,13 @@ import (
 
 var (
 	captureFlag = flag.String("capture", "", "capture data to solve")
+	typeFlag    = flag.Int("type", 0, "the type of capture calculation, 0 is next digit, 1 is halfway around")
+)
+
+// type constants for how the sum is calculated
+const (
+	NEXT = iota
+	HALFWAY
 )
 
 func init() {
@@ -29,7 +36,7 @@ func splitString(data string) (digits []int, err error) {
 
 // Loop through digits and sum them if they are matching next to each other
 // Make sure to get the last digit summed with the first.
-func sum(digits []int) int {
+func sumNext(digits []int) int {
 	total := 0
 	lastIndex := len(digits) - 1
 	for index, a := range digits[:lastIndex] {
@@ -46,6 +53,26 @@ func sum(digits []int) int {
 	return total
 }
 
+// Loop through digits and sum them if they are matching next to each other
+// Make sure to get the last digit summed with the first.
+func sumHalfway(digits []int) int {
+	total := 0
+	offset := len(digits) / 2
+	for index, a := range digits {
+		var halfwayIndex int
+		if index >= offset { // Need to wrap halfway index
+			halfwayIndex = index - offset
+		} else {
+			halfwayIndex = index + offset
+		}
+		b := digits[halfwayIndex]
+		if a == b {
+			total = total + a
+		}
+	}
+	return total
+}
+
 func main() {
 	if *captureFlag == "" {
 		flag.PrintDefaults()
@@ -56,5 +83,14 @@ func main() {
 		fmt.Printf("Error: could not parse the capture data: %v\n", err)
 		return
 	}
-	fmt.Printf("Digits = %v, Sum = %d\n", digits, sum(digits))
+	var sum int
+	switch *typeFlag {
+	case NEXT:
+		sum = sumNext(digits)
+		break
+	case HALFWAY:
+		sum = sumHalfway(digits)
+		break
+	}
+	fmt.Printf("Digits = %v, Sum = %d\n", digits, sum)
 }
