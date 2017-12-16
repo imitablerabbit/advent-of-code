@@ -52,8 +52,8 @@ func sumNext(digits []int) (total int) {
 	return
 }
 
-// Loop through digits and sum them if they are matching next to each other
-// Make sure to get the last digit summed with the first.
+// Loop through digits and sum them if they match the digit halfway around the
+// slice.
 func sumHalfway(digits []int) (total int) {
 	offset := len(digits) / 2
 	for index, a := range digits {
